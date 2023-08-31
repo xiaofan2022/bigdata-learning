@@ -1,17 +1,22 @@
 package com.xiaofan.flink
 
-import org.apache.flink.api.common.eventtime.{SerializableTimestampAssigner, WatermarkGenerator, WatermarkOutput, WatermarkStrategy}
+import com.xiaofan.utils.DateUtils
+import org.apache.flink.api.common.ExecutionConfig
+import org.apache.flink.api.common.eventtime.{SerializableTimestampAssigner, WatermarkStrategy}
 import org.apache.flink.api.common.state.{MapState, MapStateDescriptor}
+import org.apache.flink.api.common.typeutils.TypeSerializer
 import org.apache.flink.configuration.Configuration
+import org.apache.flink.streaming.api.environment
 import org.apache.flink.streaming.api.scala._
 import org.apache.flink.streaming.api.scala.function.ProcessWindowFunction
-import org.apache.flink.streaming.api.watermark.Watermark
-import org.apache.flink.streaming.api.windowing.assigners.TumblingEventTimeWindows
-import org.apache.flink.streaming.api.windowing.time.Time
+import org.apache.flink.streaming.api.windowing.assigners.WindowAssigner
+import org.apache.flink.streaming.api.windowing.triggers.{EventTimeTrigger, Trigger}
 import org.apache.flink.streaming.api.windowing.windows.TimeWindow
 import org.apache.flink.util.Collector
 
 import java.time.Duration
+import java.util
+import java.util.Collections
 import scala.collection.JavaConverters._
 
 /**
@@ -26,29 +31,51 @@ object CustomWaterMark {
     val configuration = new Configuration()
     configuration.setInteger("rest.port", 8081)
     /**
-     小张,room_1,1,10,1000
-     小张,room_1,1,5,1000
-     小李,room_2,1,10,1500
+     * 赵四,room_1,3,10,2021-01-03 10:00:00
+     * 刘能,room_2,3,40,2021-01-03 10:00:00
+     * 大脑袋,room_2,10,2,2021-01-03 10:00:00
+     * 赵四,room_1,3,20,2021-01-03 10:03:00
+     * 刘能,room_2,3,30,2021-01-03 10:03:00
+     * 赵四,room_1,3,18,2021-01-03 10:06:00
+     * 刘能,room_2,3,18,2021-01-03 10:06:00
+     * 老谢,room_2,3,17,2021-01-03 10:06:00
+     * 刘能,room_2,3,16,2021-01-03 10:09:00
+     * 老谢,room_2,3,22,2021-01-03 10:09:00
+     * 大脑袋,room_2,10,5,2021-01-03 10:10:00
+     * 赵四,room_1,3,50,2021-01-03 10:12:00
+     * 刘能,room_2,3,80,2021-01-03 10:12:00
+     * 赵四,room_1,3,40,2021-01-03 10:27:00
+     * 刘能,room_2,3,50,2021-01-03 10:27:00
+     * 赵四,room_1,3,70,2021-01-03 10:30:00
+     * 刘能,room_2,3,30,2021-01-03 10:30:00
+     * 大脑袋,room_2,10,20,2021-01-03 10:30:00
+     *
+     *
+     *
+     * 小号 0,3,6,9,12,15
+     * 大号 0,5,10,15
      */
     val env: StreamExecutionEnvironment = StreamExecutionEnvironment.createLocalEnvironmentWithWebUI(configuration)
     env.setParallelism(1)
     val eventDataStream: DataStream[UserEvent] = env.socketTextStream("cdh1", 9999).map(t => {
       val strings: Array[String] = t.split(",")
-      UserEvent(strings(0),strings(1), strings(2).toInt, strings(3).toInt,strings(4).toInt)
+      UserEvent(strings(0), strings(1), strings(2).toInt, strings(3).toInt,strings(4))
     }).assignTimestampsAndWatermarks(WatermarkStrategy.forBoundedOutOfOrderness(Duration.ofSeconds(0)).withTimestampAssigner(new SerializableTimestampAssigner[UserEvent] {
       override def extractTimestamp(element: UserEvent, recordTimestamp: Long) = {
-        element.eventTime
+        DateUtils.convertDateStr2Long(element.eventTime, DateUtils.DATE_TIME_PATTERN).toLong
       }
     }))
     val resultDataStream: DataStream[(String, Long)] = eventDataStream.keyBy(_.roomId)
-      .window(TumblingEventTimeWindows.of(Time.seconds(3))) //固定窗口
+      //.window(TumblingEventTimeWindows.of(Time.seconds(3))) //固定窗口
+      .window(new CustomWindowAssigner())
       .process(new ProcessWindowFunction[UserEvent, Tuple2[String, Long], String, TimeWindow]() {
         lazy val sumReadNum: MapState[String, Long] = getRuntimeContext.getMapState(new MapStateDescriptor[String, Long]("sumReadNum", classOf[String], classOf[Long]))
         override def process(key: String, context: Context, elements: Iterable[UserEvent], out: Collector[(String, Long)]): Unit = {
           elements.foreach(event => {
-            if (sumReadNum.contains(event.name)) sumReadNum.put(event.name, sumReadNum.get(event.name) + event.clickCount) else sumReadNum.put(event.name, event.clickCount)
+            if (sumReadNum.contains(event.name)) sumReadNum.put(event.name, sumReadNum.get(event.name) + event.goodsCount) else sumReadNum.put(event.name, event.goodsCount)
           })
-          println("window start:%d,end:%d".format(context.window.getStart,context.window.getEnd))
+          val elementTimeMap: Map[String, String] = elements.groupBy(_.name).map(t => t._1 -> t._2.map(t1 => t1.eventTime + "->" + t1.goodsCount).mkString(","))
+          println("window start:%s,end:%s rows:%s".format(DateUtils.convertMilliTimeToString(context.window.getStart), DateUtils.convertMilliTimeToString(context.window.getEnd), elementTimeMap.mkString(",")))
           out.collect(elements.head.roomId, sumReadNum.values().iterator().asScala.sum)
         }
       })
@@ -57,14 +84,21 @@ object CustomWaterMark {
   }
 
 }
-case class UserEvent(name:String,roomId:String ,windSize:Int,clickCount:Int,eventTime:Int)
 
-class PunctuatedAssigner extends WatermarkGenerator[UserEvent] {
-  override def onEvent(event: UserEvent, l: Long, output: WatermarkOutput): Unit = {
+case class UserEvent(name: String, roomId: String, windSize: Int, goodsCount: Int, eventTime: String)
 
+class CustomWindowAssigner extends WindowAssigner[Object, TimeWindow] {
+  override def assignWindows(element: Object, timestamp: Long, context: WindowAssigner.WindowAssignerContext): util.Collection[TimeWindow] = { // 根据数据字段的值来决定窗口的大小
+    val windowSize = element.asInstanceOf[UserEvent].windSize * 1000 * 60
+    val startTime: Long = timestamp - (timestamp % windowSize)
+    Collections.singletonList(new TimeWindow(startTime, startTime + windowSize))
   }
 
-  override def onPeriodicEmit(output: WatermarkOutput): Unit = {
-    output.emitWatermark(new Watermark(System.currentTimeMillis - maxTimeLag))
-  }
+  override def toString = "CustomWindowAssigner"
+
+  override def isEventTime = true
+
+  override def getDefaultTrigger(streamExecutionEnvironment: environment.StreamExecutionEnvironment): Trigger[Object, TimeWindow] = EventTimeTrigger.create()
+
+  override def getWindowSerializer(executionConfig: ExecutionConfig): TypeSerializer[TimeWindow] = new TimeWindow.Serializer
 }
