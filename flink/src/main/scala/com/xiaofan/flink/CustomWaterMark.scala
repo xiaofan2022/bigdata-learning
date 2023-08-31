@@ -1,11 +1,8 @@
 package com.xiaofan.flink
 
-import com.sun.tools.javac.util.List.{collector, convert}
 import org.apache.flink.api.common.eventtime.{SerializableTimestampAssigner, WatermarkGenerator, WatermarkOutput, WatermarkStrategy}
 import org.apache.flink.api.common.state.{MapState, MapStateDescriptor}
 import org.apache.flink.configuration.Configuration
-import org.apache.flink.streaming.api.functions.{KeyedProcessFunction, ProcessFunction}
-import org.apache.flink.streaming.api.functions.timestamps.BoundedOutOfOrdernessTimestampExtractor
 import org.apache.flink.streaming.api.scala._
 import org.apache.flink.streaming.api.scala.function.ProcessWindowFunction
 import org.apache.flink.streaming.api.watermark.Watermark
@@ -14,9 +11,8 @@ import org.apache.flink.streaming.api.windowing.time.Time
 import org.apache.flink.streaming.api.windowing.windows.TimeWindow
 import org.apache.flink.util.Collector
 
-import scala.collection.JavaConverters._
 import java.time.Duration
-import scala.sys.env
+import scala.collection.JavaConverters._
 
 /**
  * @description ${description}
