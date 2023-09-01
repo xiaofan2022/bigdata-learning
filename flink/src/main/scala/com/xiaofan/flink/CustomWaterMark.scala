@@ -20,12 +20,14 @@ import java.util.Collections
 import scala.collection.JavaConverters._
 
 /**
- * @description ${description}
+ * @description 自定义窗口大小(实现同一topic数据可以不同周期计算)
+ *              背景:数据为直播间抓取数据，爬虫维护了一个账号规则简单讲 大号采集周期时间短，账号级别约第采集周期约长从而
+ *              实现高质量的数据抓取，实时系统需要在一套程序适应不同的周期（采集周期=计算周期）
  * @author twan
  * @date 2023-08-30 21:44:33
  * @version 1.0
  */
-object CustomWaterMark {
+object CustomWindowSize {
 
   def main(args: Array[String]): Unit = {
     val configuration = new Configuration()
@@ -49,9 +51,6 @@ object CustomWaterMark {
      * 赵四,room_1,3,70,2021-01-03 10:30:00
      * 刘能,room_2,3,30,2021-01-03 10:30:00
      * 大脑袋,room_2,10,20,2021-01-03 10:30:00
-     *
-     *
-     *
      * 小号 0,3,6,9,12,15
      * 大号 0,5,10,15
      */
