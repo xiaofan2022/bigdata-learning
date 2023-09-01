@@ -40,15 +40,19 @@ object MysqlGenerator {
         var index = 1
         val random = new Random()
         while (flag) {
-          context.collect(Student(index, RandomNameUtils.fullName(), random.nextInt(100)))
-          index = index + 1
+          1.to(100).foreach(t => {
+            context.collect(Student(index, RandomNameUtils.fullName(), random.nextInt(100)))
+            index = index + 1
+          })
           Thread.sleep(1000L) // 1s生成1个数据
-
         }
       }
 
       override def cancel() = flag = false
     })
+    /*
+    val sourceDataStream: DataStream[Student] = env.fromElements(Student(101, "test", 30))
+    */
     val sql =
       """INSERT INTO `test`.`student`(`id`, `name`, `age`) VALUES (?, ?, ?)
         |

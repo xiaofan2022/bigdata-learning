@@ -16,7 +16,7 @@ object SinkUtils {
 
   val jdbcDriverName: String = "com.mysql.jdbc.Driver"
 
-  def getJDBCSink[T](sql: String, dataBaseName: String, jdbcStatementBuilder: JdbcStatementBuilder[T], batchSize: Int = 2000): SinkFunction[T] = {
+  def getJDBCSink[T](sql: String, dataBaseName: String, jdbcStatementBuilder: JdbcStatementBuilder[T], batchSize: Int = 200): SinkFunction[T] = {
     val jdbcConnectionOptionsBuilder = new JdbcConnectionOptions.JdbcConnectionOptionsBuilder()
       .withUrl("jdbc:mysql://cdh1:3306/%s?useUnicode=true&characterEncoding=UTF-8".format(dataBaseName))
       .withUsername("root")
