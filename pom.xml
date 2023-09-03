@@ -19,6 +19,7 @@
     <properties>
         <maven.compiler.source>8</maven.compiler.source>
         <maven.compiler.target>8</maven.compiler.target>
+        <root.project.dir>D:/develop/workspace/third/bigdata-learning</root.project.dir>
     </properties>
 
     <dependencies>

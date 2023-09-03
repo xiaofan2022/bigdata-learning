@@ -62,6 +62,6 @@
 
 
     <root level="info">
-        <appender-ref ref="CONSOLE_APPENDER"/>
+      <!--  <appender-ref ref="CONSOLE_APPENDER"/>-->
     </root>
 </configuration>

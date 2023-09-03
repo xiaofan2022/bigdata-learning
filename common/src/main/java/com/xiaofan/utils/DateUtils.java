@@ -157,6 +157,10 @@ public class DateUtils {
         return format(LocalDateTime.now(), DATE_TIME_PATTERN);
     }
 
+    public static Long getCurrentTimeStamp() {
+        return LocalDateTime.now().toInstant(ZoneOffset.of("+8")).toEpochMilli() / 1000;
+    }
+
     /**
      * 获取当前日期字符串.
      *

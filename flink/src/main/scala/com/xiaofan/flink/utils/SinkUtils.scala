@@ -18,9 +18,9 @@ object SinkUtils {
 
   def getJDBCSink[T](sql: String, dataBaseName: String, jdbcStatementBuilder: JdbcStatementBuilder[T], batchSize: Int = 200): SinkFunction[T] = {
     val jdbcConnectionOptionsBuilder = new JdbcConnectionOptions.JdbcConnectionOptionsBuilder()
-      .withUrl("jdbc:mysql://cdh1:3306/%s?useUnicode=true&characterEncoding=UTF-8".format(dataBaseName))
+      .withUrl("jdbc:mysql://hadoop101:3306/%s?useUnicode=true&characterEncoding=UTF-8".format(dataBaseName))
       .withUsername("root")
-      .withPassword("Wt.123456")
+      .withPassword("123456")
     JdbcSink.sink(sql, jdbcStatementBuilder,
       JdbcExecutionOptions.builder().withBatchSize(batchSize).build(),
       jdbcConnectionOptionsBuilder.withDriverName(jdbcDriverName).build())

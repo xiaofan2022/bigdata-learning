@@ -1,6 +1,5 @@
 package com.xiaofan.flink.utils
 
-
 /**
  * @author: twan
  * @date: 2023/9/1 17:30
@@ -13,13 +12,13 @@ object CommonUtils {
     println(getCurrentCKPath())
   }
 
+  def getCurrentCKPath(): String = {
+    getCurrentModelPath() + "/checkpoint"
+  }
+
   def getCurrentModelPath() = {
     val path: String = this.getClass.getClassLoader.getResource("./").getPath
     path.substring(0, path.indexOf("target") - 1)
-  }
-
-  def getCurrentCKPath(): String = {
-    getCurrentModelPath() + "/checkpoint"
   }
 
 }

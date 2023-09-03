@@ -5,8 +5,7 @@ import com.alibaba.fastjson2.JSONArray;
 import com.alibaba.fastjson2.JSONObject;
 import com.google.common.base.CaseFormat;
 import com.google.common.collect.Lists;
-import com.ims.tianxiaxiu.bean.UniqueIndex;
-import com.ims.tianxiaxiu.constants.JdbcConstants;
+import com.xiaofan.contans.JdbcConstants;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.tuple.Pair;
 import org.apache.commons.lang3.tuple.Triple;
@@ -314,10 +313,7 @@ public class JdbcUtil {
     public Triple<String, List<String>, List<String>> getUpsertSql(String tableName, Class clazz) {
         //优先按照unique index 查找
         //是否存在唯一索引如果存在请在对应的实体对象加UniqueIndex注解
-        List<String> primaryKeyList = Arrays.stream(ReflectUtil.getAllFields(clazz)).filter(t -> t.isAnnotationPresent(UniqueIndex.class)).map(t -> {
-                    return t.getAnnotation(UniqueIndex.class).name();
-                })
-                .collect(Collectors.toList());
+        List<String> primaryKeyList = Lists.newArrayList();
         if (primaryKeyList.isEmpty()) {
             //查表主键
             List<Map<String, Object>> primaryKey = query(String.format(JdbcConstants.PGSQL_QUERY_PRIMARY_KEY, tableName));
