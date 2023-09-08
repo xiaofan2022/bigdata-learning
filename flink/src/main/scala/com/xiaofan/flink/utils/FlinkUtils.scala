@@ -17,7 +17,10 @@ import java.time.Duration
  */
 object FlinkUtils {
 
-  def getStreamTableEnvironment(checkPointDuration: Duration, pathSuffix: String="", isLocalEnv: Boolean=true): StreamExecutionEnvironment = {
+  def getStreamTableEnvironment(
+      checkPointDuration: Duration,
+      pathSuffix: String = "",
+      isLocalEnv: Boolean = true): StreamExecutionEnvironment = {
     var env: StreamExecutionEnvironment = null
     if (isLocalEnv) {
       val configuration = new Configuration()
@@ -34,17 +37,21 @@ object FlinkUtils {
     //checkpoint允许的最大连续失败次数
     env.getCheckpointConfig.setTolerableCheckpointFailureNumber(3)
     if (!isLocalEnv) {
-      env.getCheckpointConfig.setCheckpointStorage(new Path("hdfs://nameservice1/data/flink/checkpoint/" + pathSuffix))
+      env.getCheckpointConfig.setCheckpointStorage(
+        new Path("hdfs://nameservice1/data/flink/checkpoint/" + pathSuffix))
     } else if (SystemUtils.IS_OS_WINDOWS) {
-      env.getCheckpointConfig.setCheckpointStorage(new Path("file:///{}/{}".format(getClass.getResource("").getPath, pathSuffix)))
+      env.getCheckpointConfig.setCheckpointStorage(
+        new Path("file:///{}/{}".format(getClass.getResource("").getPath, pathSuffix)))
     } else {
-      env.getCheckpointConfig.setCheckpointStorage(new Path("file:///home/zgx/data/flink/check_point/" + pathSuffix))
+      env.getCheckpointConfig.setCheckpointStorage(
+        new Path("file:///home/zgx/data/flink/check_point/" + pathSuffix))
     }
     env
   }
 
-
-  def getSampeStreamTableEnvironment(path: String, ckInterval: Long): StreamExecutionEnvironment = {
+  def getSampeStreamTableEnvironment(
+      path: String,
+      ckInterval: Long): StreamExecutionEnvironment = {
     val configuration = new Configuration()
     configuration.setInteger("rest.port", 8080)
     val env: StreamExecutionEnvironment =
@@ -62,8 +69,8 @@ object FlinkUtils {
   }
 
   def main(args: Array[String]): Unit = {
-    getCustomSource {
-      () => List(new Student901())
+    getCustomSource { () =>
+      List(new Student901())
     }
   }
 
@@ -74,20 +81,21 @@ object FlinkUtils {
    * @tparam Out
    * @return
    */
-  def getCustomSource[Out](dataGenerator: () => List[Out]): SourceFunction[Out] = {
+  def getCustomSource[Out](
+      dataGenerator: () => List[Out],
+      millis: Long = Duration.ofMinutes(1).toMillis): SourceFunction[Out] = {
     new SourceFunction[Out]() {
       var flag = true
 
       override def run(context: SourceFunction.SourceContext[Out]) = {
         while (flag) {
           dataGenerator().foreach(context.collect(_))
-          java.util.concurrent.TimeUnit.MINUTES.sleep(1)
+          Thread.sleep(millis)
         }
       }
 
       override def cancel() = flag = false
     }
   }
-
 
 }

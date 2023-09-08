@@ -1,12 +1,15 @@
 package com.xiaofan.flink
 
-import com.xiaofan.flink.utils.{CommonUtils, SinkUtils}
+import com.xiaofan.flink.bean.Student901
+import com.xiaofan.flink.utils.{CommonUtils, FlinkUtils, SinkUtils}
 import com.xiaofan.utils.RandomNameUtils
-import org.apache.flink.configuration.Configuration
 import org.apache.flink.connector.jdbc.JdbcStatementBuilder
-import org.apache.flink.core.fs.Path
 import org.apache.flink.streaming.api.functions.source.SourceFunction
-import org.apache.flink.streaming.api.scala.{DataStream, StreamExecutionEnvironment, createTypeInformation}
+import org.apache.flink.streaming.api.scala.{
+  DataStream,
+  StreamExecutionEnvironment,
+  createTypeInformation
+}
 
 import java.sql.PreparedStatement
 import java.time.Duration
@@ -20,57 +23,39 @@ import java.util.Random
 object MysqlGenerator {
 
   def main(args: Array[String]): Unit = {
-    val configuration = new Configuration()
-    configuration.setInteger("rest.port", 8080)
-    val env: StreamExecutionEnvironment = StreamExecutionEnvironment.createLocalEnvironmentWithWebUI(configuration)
-    env.enableCheckpointing(Duration.ofSeconds(10).toMillis)
-    //最小间隔
-    //env.getCheckpointConfig.setMinPauseBetweenCheckpoints(Duration.ofMinutes(5).toMillis)
-    //超时时间
-    env.getCheckpointConfig.setCheckpointTimeout(Duration.ofMinutes(10).toMillis)
-    env.getCheckpointConfig.setMaxConcurrentCheckpoints(1)
 
-    env.getCheckpointConfig.setCheckpointStorage(new Path("file://" + CommonUtils.getCurrentCKPath() + "/cdctest"))
+    val env: StreamExecutionEnvironment = FlinkUtils.getSampeStreamTableEnvironment(
+      "file://" + CommonUtils.getCurrentCKPath() + "/cdctest",
+      Duration.ofSeconds(10).toMillis)
+    val random = new Random()
+    val list1: List[Student901] = 1
+      .to(100)
+      .map(t => {
+        new Student901(RandomNameUtils.fullName(), random.nextInt(100))
+      })
+      .toList
 
-    env.setParallelism(1)
-    val sourceDataStream: DataStream[Student] = env.addSource(new SourceFunction[Student]() {
-      var flag = true
-
-      override def run(context: SourceFunction.SourceContext[Student]) = {
-        var index = 1
-        val random = new Random()
-        while (flag) {
-          1.to(100).foreach(t => {
-            context.collect(Student(index, RandomNameUtils.fullName(), random.nextInt(100)))
-            index = index + 1
+    val generateSourceFunction: SourceFunction[Student901] =
+      FlinkUtils.getCustomSource[Student901](() =>
+        1.to(100)
+          .map(t => {
+            new Student901(RandomNameUtils.fullName(), random.nextInt(100))
           })
-          Thread.sleep(1000L) // 1s生成1个数据
-        }
-      }
-
-      override def cancel() = flag = false
-    })
-    /*
-    val sourceDataStream: DataStream[Student] = env.fromElements(Student(101, "test", 30))
-    */
+          .toList)
+    val sourceDataStream: DataStream[Student901] = env.addSource(generateSourceFunction)
     val sql =
-      """INSERT INTO `test`.`student`(`id`, `name`, `age`) VALUES (?, ?, ?)
-        |
+      """INSERT INTO `test`.`student`(, `name`, `age`) VALUES (?, ?)
         |""".stripMargin
-    sourceDataStream.addSink(SinkUtils.getJDBCSink(sql, "test",
-      new JdbcStatementBuilder[Student]() {
-        override def accept(preparedStatement: PreparedStatement, u: Student) = {
-          SinkUtils.createStatement(sql, u, preparedStatement)
-        }
-      }))
-
-    //sourceDataStream.addSink()
-    /*    sourceDataStream.addSink()*/
-
+    sourceDataStream.addSink(
+      SinkUtils.getJDBCSink(
+        sql,
+        "test",
+        new JdbcStatementBuilder[Student901]() {
+          override def accept(preparedStatement: PreparedStatement, u: Student901) = {
+            SinkUtils.createStatement(sql, u, preparedStatement)
+          }
+        }))
     env.execute(this.getClass.getSimpleName.dropRight(1))
   }
 
 }
-
-
-case class Student(id: Int, name: String, age: Int)
