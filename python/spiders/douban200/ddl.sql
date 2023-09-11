@@ -1,0 +1,7 @@
+CREATE TABLE `douban_video_item` (
+	`id` INT ( 11 ) NOT NULL AUTO_INCREMENT,
+	`title` VARCHAR ( 200 ) DEFAULT NULL,
+	`rank` INT DEFAULT NULL,
+	`subject` VARCHAR ( 200 ) DEFAULT NULL,
+PRIMARY KEY ( `id` )
+) ENGINE = INNODB DEFAULT CHARSET = utf8;
