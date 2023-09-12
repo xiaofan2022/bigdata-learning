@@ -8,6 +8,6 @@
 from itemadapter import ItemAdapter
 
 
-class BossPipeline:
+class BeikeTestPipeline:
     def process_item(self, item, spider):
         return item

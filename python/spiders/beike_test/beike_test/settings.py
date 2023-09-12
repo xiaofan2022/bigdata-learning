@@ -1,4 +1,4 @@
-# Scrapy settings for boss project
+# Scrapy settings for beike_test project
 #
 # For simplicity, this file contains only settings considered important or
 # commonly used. You can find more settings consulting the documentation:
@@ -7,14 +7,14 @@
 #     https://docs.scrapy.org/en/latest/topics/downloader-middleware.html
 #     https://docs.scrapy.org/en/latest/topics/spider-middleware.html
 
-BOT_NAME = "boss"
+BOT_NAME = "beike_test"
 
-SPIDER_MODULES = ["boss.spiders"]
-NEWSPIDER_MODULE = "boss.spiders"
+SPIDER_MODULES = ["beike_test.spiders"]
+NEWSPIDER_MODULE = "beike_test.spiders"
 
 
 # Crawl responsibly by identifying yourself (and your website) on the user-agent
-USER_AGENT = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/116.0.0.0 Safari/537.36"
+#USER_AGENT = "beike_test (+http://www.yourdomain.com)"
 
 # Obey robots.txt rules
 ROBOTSTXT_OBEY = False
@@ -45,13 +45,13 @@ ROBOTSTXT_OBEY = False
 # Enable or disable spider middlewares
 # See https://docs.scrapy.org/en/latest/topics/spider-middleware.html
 #SPIDER_MIDDLEWARES = {
-#    "boss.middlewares.BossSpiderMiddleware": 543,
+#    "beike_test.middlewares.BeikeTestSpiderMiddleware": 543,
 #}
 
 # Enable or disable downloader middlewares
 # See https://docs.scrapy.org/en/latest/topics/downloader-middleware.html
 #DOWNLOADER_MIDDLEWARES = {
-#    "boss.middlewares.BossDownloaderMiddleware": 543,
+#    "beike_test.middlewares.BeikeTestDownloaderMiddleware": 543,
 #}
 
 # Enable or disable extensions
@@ -63,7 +63,7 @@ ROBOTSTXT_OBEY = False
 # Configure item pipelines
 # See https://docs.scrapy.org/en/latest/topics/item-pipeline.html
 #ITEM_PIPELINES = {
-#    "boss.pipelines.BossPipeline": 300,
+#    "beike_test.pipelines.BeikeTestPipeline": 300,
 #}
 
 # Enable and configure the AutoThrottle extension (disabled by default)
