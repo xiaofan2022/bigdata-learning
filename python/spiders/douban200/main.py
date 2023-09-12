@@ -1,4 +1,5 @@
 from scrapy import cmdline
 
 if __name__ == '__main__':
-    cmdline.execute("scrapy crawl douban --nolog".split())
+    #--nolog
+    cmdline.execute("scrapy crawl douban ".split())

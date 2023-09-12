@@ -2,6 +2,7 @@
 #
 # Don't forget to add your pipeline to the ITEM_PIPELINES setting
 # See: https://docs.scrapy.org/en/latest/topics/item-pipeline.html
+import pymongo
 import pymysql
 # useful for handling different item types with a single interface
 from itemadapter import ItemAdapter
@@ -50,3 +51,18 @@ class Douban200Pipeline:
         # 关闭数据库连接
         self.conn.close()
 
+
+# 数据存储到Mongo中
+# class MongoPipeline:
+#     def open_spider(self, spider):
+#         self.conn = pymongo.MongoClient(host='hadoop101', port=27017)
+#         self.conn.adb.authenticate("root", "root", mechanism='MONGODB-CR')
+#         self.db_test = self.conn['test']
+#
+#     def process_item(self, item, spider):
+#         self.db_test['xiaoshuo'].insert_one({'title': item['title']})
+#         print('插入成功！')
+#         return item
+#
+#     def close_spider(self, spider):
+#         self.conn.close()
