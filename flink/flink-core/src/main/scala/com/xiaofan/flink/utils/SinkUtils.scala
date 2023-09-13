@@ -37,17 +37,6 @@ object SinkUtils {
       jdbcConnectionOptionsBuilder.withDriverName(jdbcDriverName).build())
   }
 
-  def main(args: Array[String]): Unit = {
-    val student: Student = Student(1, "萧仲昂", 12)
-    val goodsInfoLatestSql =
-      """
-        |insert INTO student ( id, name, age)
-        |VALUES
-        |	(?,?,?)
-        |""".stripMargin
-    createStatement(goodsInfoLatestSql, student, null)
-  }
-
   def createStatement(sql: String, obj: AnyRef, statement: PreparedStatement): Unit = {
     val isCaseClass: Boolean =
       runtimeMirror(obj.getClass.getClassLoader).classSymbol(obj.getClass).isCaseClass

@@ -49,7 +49,12 @@ object FlinkUtils {
     env
   }
 
-  def getSampeStreamTableEnvironment(
+  /**
+   * @param path       完整路径
+   * @param ckInterval ck周期
+   * @return
+   */
+  def getSampleStreamTableEnvironment(
       path: String,
       ckInterval: Long): StreamExecutionEnvironment = {
     val configuration = new Configuration()

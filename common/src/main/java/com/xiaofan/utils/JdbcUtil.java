@@ -5,7 +5,7 @@ import com.alibaba.fastjson2.JSONArray;
 import com.alibaba.fastjson2.JSONObject;
 import com.google.common.base.CaseFormat;
 import com.google.common.collect.Lists;
-import com.xiaofan.contans.JdbcConstants;
+import com.xiaofan.constants.JdbcConstants;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.tuple.Pair;
 import org.apache.commons.lang3.tuple.Triple;

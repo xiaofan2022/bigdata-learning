@@ -6,9 +6,19 @@ import com.xiaofan.utils.{DateUtils, JdbcUtil}
 import org.apache.flink.api.common.eventtime.{SerializableTimestampAssigner, WatermarkStrategy}
 import org.apache.flink.api.java.functions.KeySelector
 import org.apache.flink.configuration.Configuration
-import org.apache.flink.streaming.api.scala.async.{AsyncRetryPredicate, AsyncRetryStrategy, ResultFuture, RichAsyncFunction}
+import org.apache.flink.streaming.api.scala.async.{
+  AsyncRetryPredicate,
+  AsyncRetryStrategy,
+  ResultFuture,
+  RichAsyncFunction
+}
 import org.apache.flink.streaming.api.scala.function.ProcessWindowFunction
-import org.apache.flink.streaming.api.scala.{AsyncDataStream, DataStream, StreamExecutionEnvironment, createTypeInformation}
+import org.apache.flink.streaming.api.scala.{
+  AsyncDataStream,
+  DataStream,
+  StreamExecutionEnvironment,
+  createTypeInformation
+}
 import org.apache.flink.streaming.api.windowing.assigners.TumblingEventTimeWindows
 import org.apache.flink.streaming.api.windowing.time.Time
 import org.apache.flink.streaming.api.windowing.windows.TimeWindow
@@ -31,8 +41,10 @@ import scala.collection.JavaConverters._
  * @description:
  */
 object AsyncMysqlSource {
+
   val jdbcUrl =
     "jdbc:mysql://hadoop101:3306?useSSL=false&allowPublicKeyRetrieval=true"
+
   val username = "root"
   val password = "123456"
   val driverName = "com.mysql.jdbc.Driver"
@@ -46,13 +58,18 @@ object AsyncMysqlSource {
     //val counts=1000
     val ckInterval: Long = Duration.ofMinutes(10).toMillis
     val ckPath = "file://%s/cdctest".format(CommonUtils.getCurrentCKPath())
-    val env: StreamExecutionEnvironment = FlinkUtils.getSampeStreamTableEnvironment(ckPath, ckInterval)
+    val env: StreamExecutionEnvironment =
+      FlinkUtils.getSampleStreamTableEnvironment(ckPath, ckInterval)
     val sourceDataStream: DataStream[Student901] = env
-      .addSource(FlinkUtils.getCustomSource[Student901](() => 1.to(counts).map(index => {
-        val student90 = new Student901(index, "", 0)
-        student90.setEventTime(DateUtils.getCurrentTimeStamp)
-        student90
-      }).toList))
+      .addSource(
+        FlinkUtils.getCustomSource[Student901](() =>
+          1.to(counts)
+            .map(index => {
+              val student90 = new Student901(index, "", 0)
+              student90.setEventTime(DateUtils.getCurrentTimeStamp)
+              student90
+            })
+            .toList))
       .assignTimestampsAndWatermarks(WatermarkStrategy
         .forBoundedOutOfOrderness(Duration.ofSeconds(0))
         .withTimestampAssigner(new SerializableTimestampAssigner[Student901] {
@@ -60,13 +77,13 @@ object AsyncMysqlSource {
             t.getEventTime * 1000
         }))
 
-
     val resultDataStream: DataStream[Student901] = AsyncDataStream.unorderedWaitWithRetry(
       sourceDataStream,
       new AsyncDatabaseRequest(),
       1000L,
       TimeUnit.SECONDS,
-      100, createFixedRetryStrategy[Student901](3, 1000L))
+      100,
+      createFixedRetryStrategy[Student901](3, 1000L))
     /* val resultDataStream: DataStream[Student901] =
        AsyncDataStream.unorderedWait(
          sourceDataStream,
@@ -84,7 +101,11 @@ object AsyncMysqlSource {
       .window(TumblingEventTimeWindows.of(Time.minutes(1)))
       .allowedLateness(Time.seconds(30)) //ÔÊÐí³Ùµ½30s
       .process(new ProcessWindowFunction[Student901, String, String, TimeWindow] {
-        override def process(key: String, context: Context, elements: Iterable[Student901], out: Collector[String]): Unit = {
+        override def process(
+            key: String,
+            context: Context,
+            elements: Iterable[Student901],
+            out: Collector[String]): Unit = {
           out.collect("count:%d,sum:%d".format(elements.size, elements.map(_.getAge.toLong).sum))
         }
       })
@@ -105,7 +126,6 @@ object AsyncMysqlSource {
     env.execute(this.getClass.getSimpleName.dropRight(1))
   }
 
-
   /**
    * 这里的AsyncRetryStrategy 是scala包下的区别java版本根据flink源码中使用
    *
@@ -115,8 +135,8 @@ object AsyncMysqlSource {
    * @return
    */
   private def createFixedRetryStrategy[OUT](
-                                             maxAttempts: Int,
-                                             fixedDelayMs: Long): AsyncRetryStrategy[OUT] = {
+      maxAttempts: Int,
+      fixedDelayMs: Long): AsyncRetryStrategy[OUT] = {
     new AsyncRetryStrategy[OUT] {
 
       override def canRetry(currentAttempts: Int): Boolean = {
@@ -128,22 +148,20 @@ object AsyncMysqlSource {
       override def getRetryPredicate(): AsyncRetryPredicate[OUT] = {
         new AsyncRetryPredicate[OUT] {
           override def resultPredicate: Option[Predicate[ju.Collection[OUT]]] = {
-            Option(
-              new Predicate[ju.Collection[OUT]] {
-                override def test(t: ju.Collection[OUT]): Boolean = {
-                  //println("teteeeeeeeeee")
-                  t.isEmpty
-                }
+            Option(new Predicate[ju.Collection[OUT]] {
+              override def test(t: ju.Collection[OUT]): Boolean = {
+                //println("teteeeeeeeeee")
+                t.isEmpty
               }
-            )
+            })
           }
 
-          override def exceptionPredicate: Option[Predicate[Throwable]] = Some(RetryPredicates.HAS_EXCEPTION_PREDICATE)
+          override def exceptionPredicate: Option[Predicate[Throwable]] = Some(
+            RetryPredicates.HAS_EXCEPTION_PREDICATE)
         }
       }
     }
   }
-
 
   class AsyncDatabaseRequest extends RichAsyncFunction[Student901, Student901] {
 
@@ -169,8 +187,8 @@ object AsyncMysqlSource {
     }
 
     override def asyncInvoke(
-                              student: Student901,
-                              resultFuture: ResultFuture[Student901]): Unit = {
+        student: Student901,
+        resultFuture: ResultFuture[Student901]): Unit = {
       ps.setInt(1, student.getId)
       val resultSet: ResultSet = ps.executeQuery()
       if (resultSet.next())
@@ -182,6 +200,7 @@ object AsyncMysqlSource {
       println("input{} timeout".format(input))
       super.timeout(input, resultFuture)
     }
+
   }
 
   class MysqlClient {
@@ -189,6 +208,7 @@ object AsyncMysqlSource {
 
     val conn: Connection =
       DriverManager.getConnection(jdbcUrl, username, password)
+
     val ps: PreparedStatement =
       conn.prepareStatement("select *  from test.student where id = ?")
 
@@ -201,5 +221,7 @@ object AsyncMysqlSource {
       }
       student
     }
+
   }
+
 }

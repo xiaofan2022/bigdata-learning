@@ -24,7 +24,7 @@ object MysqlGenerator {
 
   def main(args: Array[String]): Unit = {
 
-    val env: StreamExecutionEnvironment = FlinkUtils.getSampeStreamTableEnvironment(
+    val env: StreamExecutionEnvironment = FlinkUtils.getSampleStreamTableEnvironment(
       "file://" + CommonUtils.getCurrentCKPath() + "/cdctest",
       Duration.ofSeconds(10).toMillis)
     val random = new Random()
