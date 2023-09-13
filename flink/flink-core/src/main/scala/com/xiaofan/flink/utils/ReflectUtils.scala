@@ -1,7 +1,5 @@
 package com.xiaofan.flink.utils
 
-import com.xiaofan.flink.Student
-
 import scala.reflect.runtime.universe.{TermSymbol, runtimeMirror}
 
 /**
@@ -10,7 +8,6 @@ import scala.reflect.runtime.universe.{TermSymbol, runtimeMirror}
  * @description:
  */
 object ReflectUtils {
-
 
   def main(args: Array[String]): Unit = {
     val student: Student = Student(1, "ag", 111)
@@ -23,11 +20,13 @@ object ReflectUtils {
     val mirror = runtimeMirror(obj.getClass.getClassLoader)
     val instanceMirror = mirror.reflect(obj)
     val members = instanceMirror.symbol.typeSignature.members.collect {
-      case m: TermSymbol if m.isVal || m.isVar => m.name.toString.trim -> instanceMirror.reflectField(m)
+      case m: TermSymbol if m.isVal || m.isVar =>
+        m.name.toString.trim -> instanceMirror.reflectField(m)
     }.toMap
 
     members.map { case (fieldName, fieldMirror) =>
       (fieldName, fieldMirror.get)
     }
   }
+
 }

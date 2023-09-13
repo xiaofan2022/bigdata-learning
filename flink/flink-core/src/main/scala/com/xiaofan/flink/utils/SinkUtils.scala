@@ -1,9 +1,13 @@
 package com.xiaofan.flink.utils
 
 import com.google.common.base.CaseFormat
-import com.xiaofan.flink.Student
 import com.xiaofan.utils.BeanUtils
-import org.apache.flink.connector.jdbc.{JdbcConnectionOptions, JdbcExecutionOptions, JdbcSink, JdbcStatementBuilder}
+import org.apache.flink.connector.jdbc.{
+  JdbcConnectionOptions,
+  JdbcExecutionOptions,
+  JdbcSink,
+  JdbcStatementBuilder
+}
 import org.apache.flink.streaming.api.functions.sink.SinkFunction
 import org.slf4j.{Logger, LoggerFactory}
 
@@ -16,12 +20,19 @@ object SinkUtils {
 
   val jdbcDriverName: String = "com.mysql.jdbc.Driver"
 
-  def getJDBCSink[T](sql: String, dataBaseName: String, jdbcStatementBuilder: JdbcStatementBuilder[T], batchSize: Int = 200): SinkFunction[T] = {
+  def getJDBCSink[T](
+      sql: String,
+      dataBaseName: String,
+      jdbcStatementBuilder: JdbcStatementBuilder[T],
+      batchSize: Int = 200): SinkFunction[T] = {
     val jdbcConnectionOptionsBuilder = new JdbcConnectionOptions.JdbcConnectionOptionsBuilder()
-      .withUrl("jdbc:mysql://hadoop101:3306/%s?useUnicode=true&characterEncoding=UTF-8".format(dataBaseName))
+      .withUrl("jdbc:mysql://hadoop101:3306/%s?useUnicode=true&characterEncoding=UTF-8".format(
+        dataBaseName))
       .withUsername("root")
       .withPassword("123456")
-    JdbcSink.sink(sql, jdbcStatementBuilder,
+    JdbcSink.sink(
+      sql,
+      jdbcStatementBuilder,
       JdbcExecutionOptions.builder().withBatchSize(batchSize).build(),
       jdbcConnectionOptionsBuilder.withDriverName(jdbcDriverName).build())
   }
@@ -38,15 +49,21 @@ object SinkUtils {
   }
 
   def createStatement(sql: String, obj: AnyRef, statement: PreparedStatement): Unit = {
-    val isCaseClass: Boolean = runtimeMirror(obj.getClass.getClassLoader).classSymbol(obj.getClass).isCaseClass
+    val isCaseClass: Boolean =
+      runtimeMirror(obj.getClass.getClassLoader).classSymbol(obj.getClass).isCaseClass
     var valueMap: Map[String, Any] = null
     if (isCaseClass) {
       valueMap = ReflectUtils.getCaseClassFieldValues(obj)
     } else {
-      valueMap = BeanUtils.getMethods(obj, "get").asScala.map(t => t._1.toLowerCase -> t._2.invoke(obj)).toMap
+      valueMap = BeanUtils
+        .getMethods(obj, "get")
+        .asScala
+        .map(t => t._1.toLowerCase -> t._2.invoke(obj))
+        .toMap
     }
     val newSql: String = sql.replace("`", "").replace("\\s+", "")
-    val strings: Array[String] = newSql.substring(newSql.indexOf("(") + 1, newSql.indexOf(")"))
+    val strings: Array[String] = newSql
+      .substring(newSql.indexOf("(") + 1, newSql.indexOf(")"))
       .split(",")
       .map(t => CaseFormat.LOWER_UNDERSCORE.to(CaseFormat.LOWER_CAMEL, t.trim).toLowerCase)
     strings.zipWithIndex.foreach(t => {
@@ -61,7 +78,8 @@ object SinkUtils {
               statement.setLong(index, 0L)
             }
           }
-          case y: java.lang.String => statement.setString(index, value.asInstanceOf[java.lang.String])
+          case y: java.lang.String =>
+            statement.setString(index, value.asInstanceOf[java.lang.String])
           case z: java.lang.Integer => {
             if (value != null) {
               statement.setInt(index, value.asInstanceOf[java.lang.Integer])
@@ -69,11 +87,13 @@ object SinkUtils {
               statement.setInt(index, 0)
             }
           }
-          case b: java.math.BigDecimal => statement.setBigDecimal(index, value.asInstanceOf[java.math.BigDecimal])
+          case b: java.math.BigDecimal =>
+            statement.setBigDecimal(index, value.asInstanceOf[java.math.BigDecimal])
         }
       } else {
         logger.info("filed not found {}", t._1)
       }
     })
   }
+
 }
