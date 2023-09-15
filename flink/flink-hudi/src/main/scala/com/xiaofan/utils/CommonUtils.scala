@@ -1,4 +1,4 @@
-package com.xiaofan.flink.utils
+package com.xiaofan.utils
 
 /**
  * @author: twan
