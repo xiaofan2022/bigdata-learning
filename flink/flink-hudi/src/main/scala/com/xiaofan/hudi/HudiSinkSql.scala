@@ -42,7 +42,6 @@ object HudiSinkSql {
     val tableEnv: StreamTableEnvironment =
       StreamTableEnvironment.create(env, tableEnvSettings)
     tableEnv.executeSql(sourceDDL)
-    tableEnv.executeSql(sourceDDL)
     //1. 建表，写表
     val writeTableDDL =
       """

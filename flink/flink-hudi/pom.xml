@@ -65,6 +65,12 @@
             <groupId>org.apache.hadoop</groupId>
             <artifactId>hadoop-common</artifactId>
             <version>${hadoop.version}</version>
+            <exclusions>
+                <exclusion>
+                    <artifactId>zookeeper</artifactId>
+                    <groupId>org.apache.zookeeper</groupId>
+                </exclusion>
+            </exclusions>
         </dependency>
         <dependency>
             <groupId>org.apache.hive</groupId>
@@ -79,6 +85,14 @@
                     <artifactId>hive-serde</artifactId>
                     <groupId>org.apache.hive</groupId>
                 </exclusion>
+                <exclusion>
+                    <artifactId>hive-shims-common</artifactId>
+                    <groupId>org.apache.hive.shims</groupId>
+                </exclusion>
+                <exclusion>
+                    <artifactId>zookeeper</artifactId>
+                    <groupId>org.apache.zookeeper</groupId>
+                </exclusion>
             </exclusions>
         </dependency>
         <!-- Flink 1.15 -->
@@ -87,6 +101,7 @@
             <artifactId>hudi-flink1.15-bundle</artifactId>
             <version>0.13.1</version>
         </dependency>
+
     </dependencies>
 
 </project>
