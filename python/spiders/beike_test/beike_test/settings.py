@@ -14,7 +14,7 @@ NEWSPIDER_MODULE = "beike_test.spiders"
 
 
 # Crawl responsibly by identifying yourself (and your website) on the user-agent
-#USER_AGENT = "beike_test (+http://www.yourdomain.com)"
+USER_AGENT = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/116.0.0.0 Safari/537.36"
 
 # Obey robots.txt rules
 ROBOTSTXT_OBEY = False
@@ -25,14 +25,20 @@ ROBOTSTXT_OBEY = False
 # Configure a delay for requests for the same website (default: 0)
 # See https://docs.scrapy.org/en/latest/topics/settings.html#download-delay
 # See also autothrottle settings and docs
-#DOWNLOAD_DELAY = 3
+DOWNLOAD_DELAY = 2  # 设置一个基础延迟，单位是秒
+RANDOMIZE_DOWNLOAD_DELAY = True  # 启用随机延迟
+
+# 可选的设置：设置随机延迟的范围
+DOWNLOAD_DELAY_MIN = 2  # 最小延迟，单位是秒
+DOWNLOAD_DELAY_MAX = 3  # 最大延迟，单位是秒
 # The download delay setting will honor only one of:
 #CONCURRENT_REQUESTS_PER_DOMAIN = 16
 #CONCURRENT_REQUESTS_PER_IP = 16
 
 # Disable cookies (enabled by default)
 #COOKIES_ENABLED = False
-
+RETRY_ENABLED = True
+RETRY_TIMES = 5 # 想重试几次就写几
 # Disable Telnet Console (enabled by default)
 #TELNETCONSOLE_ENABLED = False
 
@@ -50,9 +56,9 @@ ROBOTSTXT_OBEY = False
 
 # Enable or disable downloader middlewares
 # See https://docs.scrapy.org/en/latest/topics/downloader-middleware.html
-#DOWNLOADER_MIDDLEWARES = {
-#    "beike_test.middlewares.BeikeTestDownloaderMiddleware": 543,
-#}
+# DOWNLOADER_MIDDLEWARES = {
+#    "beike_test.random_delay_middleware.RandomDelayMiddleware": 543,
+# }
 
 # Enable or disable extensions
 # See https://docs.scrapy.org/en/latest/topics/extensions.html
@@ -91,3 +97,4 @@ ITEM_PIPELINES = {
 REQUEST_FINGERPRINTER_IMPLEMENTATION = "2.7"
 TWISTED_REACTOR = "twisted.internet.asyncioreactor.AsyncioSelectorReactor"
 FEED_EXPORT_ENCODING = "utf-8"
+

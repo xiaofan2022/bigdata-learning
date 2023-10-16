@@ -32,18 +32,15 @@ class BeikeTestPipeline:
             self.data.clear()
 
     def batch_insert(self):
-        sql = """
-            INSERT INTO second_house_info(bei_ke_id, total_price, bedroom_num, live_room_num, chao_xiang, floor_desc,
-                                          total_floor_num, room_area, pub_date_str, cell_name, area_name,street_name, tags)
-            VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s,%s, %s)
+        sql= """
+            INSERT INTO second_house_info(beike_id,total_price, href, room_info_str, room_layout, room_area, gua_pai_date,
+                                          transaction_date, room_age, cell_name, area_name, street_name)
+            VALUES (%s ,%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
         """
-
-        self.cursor.executemany(sql, [
-            (item['bei_ke_id'], item['total_price'], item['bedroom_num'], item['live_room_num'], item['chao_xiang'],
-             item['floor_desc'], item['total_floor_num'], item['room_area'], item['pub_date_str'], item['cell_name'],
-             item['area_name'],item['street_name'], item['tags'])
-            for item in self.data
-        ])
+        self.cursor.executemany(sql,
+                           [(item['beike_id'],item['total_price'], item['href'], item['room_info_str'], item['room_layout'],
+                             item['room_area'], item['gua_pai_date'], item['transaction_date'], item['room_age'],
+                             item['cell_name'], item['area_name'], item['street_name']) for item in self.data])
         self.conn.commit()
 
     def close_spider(self, spider):
