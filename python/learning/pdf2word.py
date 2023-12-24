@@ -12,7 +12,7 @@ def pdf_to_word(input_pdf_path, output_word_path):
     except Exception as e:
         print(f"Error during conversion: {e}")
 
-
+#修改constants.py DEFAULT_FONT_NAME = 'helv'
 if __name__ == "__main__":
     # 输入的 PDF 文件路径
     input_pdf_path = "E:\BaiduNetdiskDownload\大数据面试题\大数据面试题.pdf"
