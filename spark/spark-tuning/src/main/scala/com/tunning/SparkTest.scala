@@ -40,7 +40,7 @@ object SparkTest {
       .mode(SaveMode.Overwrite)
       .saveAsTable("test.student")
 
-    df.join()
+    //df.join()
     // 打印模拟生成的数据
     println("Simulated Student Data:")
   }

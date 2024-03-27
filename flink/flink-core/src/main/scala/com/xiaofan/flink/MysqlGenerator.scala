@@ -5,11 +5,7 @@ import com.xiaofan.flink.utils.{CommonUtils, FlinkUtils, SinkUtils}
 import com.xiaofan.utils.RandomNameUtils
 import org.apache.flink.connector.jdbc.JdbcStatementBuilder
 import org.apache.flink.streaming.api.functions.source.SourceFunction
-import org.apache.flink.streaming.api.scala.{
-  DataStream,
-  StreamExecutionEnvironment,
-  createTypeInformation
-}
+import org.apache.flink.streaming.api.scala.{DataStream, StreamExecutionEnvironment, createTypeInformation}
 
 import java.sql.PreparedStatement
 import java.time.Duration
@@ -24,9 +20,9 @@ object MysqlGenerator {
 
   def main(args: Array[String]): Unit = {
 
-    val env: StreamExecutionEnvironment = FlinkUtils.getSampleStreamTableEnvironment(
+    val env: StreamExecutionEnvironment = FlinkUtils.getStreamEnvironment(
       "file://" + CommonUtils.getCurrentCKPath() + "/cdctest",
-      Duration.ofSeconds(10).toMillis)
+      Duration.ofSeconds(10))
     val random = new Random()
     val list1: List[Student901] = 1
       .to(100)

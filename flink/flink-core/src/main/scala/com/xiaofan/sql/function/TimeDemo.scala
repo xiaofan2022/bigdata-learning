@@ -1,4 +1,4 @@
-package com.xiaofan.flink.sql
+package com.xiaofan.sql.function
 
 import org.apache.flink.api.scala.createTypeInformation
 import org.apache.flink.streaming.api.scala.{DataStream, StreamExecutionEnvironment}
@@ -10,7 +10,7 @@ import org.apache.flink.table.api.bridge.scala.StreamTableEnvironment
  * @date 2024-03-25 18:47:05
  * @version 1.0
  */
-object FlinkSqlDemo {
+object TimeDemo {
 
   def main(args: Array[String]): Unit = {
 
@@ -32,7 +32,7 @@ object FlinkSqlDemo {
     // the query contains an aggregation that produces updates
     tableEnv.createTemporaryView("source_table", inputTable)
     //  ---CAST(time_str AS TIMESTAMP) AS timestamp1,
-    val resultTable = tableEnv.sqlQuery(
+    /*    val resultTable = tableEnv.sqlQuery(
       """
         |select id,
         | TO_TIMESTAMP(time_str, 'yyyy-MM-dd hh:mm:ss') timestamp2,
@@ -44,11 +44,14 @@ object FlinkSqlDemo {
 
         | from source_table where time_str>CURRENT_DATE - INTERVAL '2' YEAR;
         |
+        |""".stripMargin)*/
+
+    val resultTable = tableEnv.sqlQuery(
+      """
+        |select `(time_str)?+.+` from source_table
         |""".stripMargin)
-    // interpret the updating Table as a changelog DataStream
     val resultStream = tableEnv.toChangelogStream(resultTable)
 
-    // add a printing sink and execute in DataStream API
     resultStream.print()
     env.execute()
 

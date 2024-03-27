@@ -17,10 +17,10 @@ import java.time.Duration
  */
 object FlinkUtils {
 
-  def getStreamTableEnvironment(
-      checkPointDuration: Duration,
-      pathSuffix: String = "",
-      isLocalEnv: Boolean = true): StreamExecutionEnvironment = {
+  def getStreamEnvironment(
+                            pathSuffix: String = "",
+                            checkPointDuration: Duration = Duration.ofMinutes(1),
+                            isLocalEnv: Boolean = true): StreamExecutionEnvironment = {
     var env: StreamExecutionEnvironment = null
     if (isLocalEnv) {
       val configuration = new Configuration()
@@ -46,30 +46,6 @@ object FlinkUtils {
       env.getCheckpointConfig.setCheckpointStorage(
         new Path("file:///home/zgx/data/flink/check_point/" + pathSuffix))
     }
-    env
-  }
-
-  /**
-   * @param path       完整路径
-   * @param ckInterval ck周期
-   * @return
-   */
-  def getSampleStreamTableEnvironment(
-      path: String,
-      ckInterval: Long): StreamExecutionEnvironment = {
-    val configuration = new Configuration()
-    configuration.setInteger("rest.port", 8080)
-    val env: StreamExecutionEnvironment =
-      StreamExecutionEnvironment.createLocalEnvironmentWithWebUI(configuration)
-    env.enableCheckpointing(ckInterval)
-    // 最小间隔
-    // env.getCheckpointConfig.setMinPauseBetweenCheckpoints(Duration.ofMinutes(5).toMillis)
-    // 超时时间
-    env.getCheckpointConfig.setCheckpointTimeout(Duration.ofMinutes(5).toMillis)
-    env.getCheckpointConfig.setMaxConcurrentCheckpoints(1)
-
-    env.getCheckpointConfig.setCheckpointStorage(new Path(path))
-    //env.setParallelism(1)
     env
   }
 

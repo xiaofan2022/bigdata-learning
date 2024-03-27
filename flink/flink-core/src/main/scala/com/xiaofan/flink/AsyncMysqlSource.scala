@@ -6,19 +6,9 @@ import com.xiaofan.utils.{DateUtils, JdbcUtil}
 import org.apache.flink.api.common.eventtime.{SerializableTimestampAssigner, WatermarkStrategy}
 import org.apache.flink.api.java.functions.KeySelector
 import org.apache.flink.configuration.Configuration
-import org.apache.flink.streaming.api.scala.async.{
-  AsyncRetryPredicate,
-  AsyncRetryStrategy,
-  ResultFuture,
-  RichAsyncFunction
-}
+import org.apache.flink.streaming.api.scala.async.{AsyncRetryPredicate, AsyncRetryStrategy, ResultFuture, RichAsyncFunction}
 import org.apache.flink.streaming.api.scala.function.ProcessWindowFunction
-import org.apache.flink.streaming.api.scala.{
-  AsyncDataStream,
-  DataStream,
-  StreamExecutionEnvironment,
-  createTypeInformation
-}
+import org.apache.flink.streaming.api.scala.{AsyncDataStream, DataStream, StreamExecutionEnvironment, createTypeInformation}
 import org.apache.flink.streaming.api.windowing.assigners.TumblingEventTimeWindows
 import org.apache.flink.streaming.api.windowing.time.Time
 import org.apache.flink.streaming.api.windowing.windows.TimeWindow
@@ -56,10 +46,9 @@ object AsyncMysqlSource {
       jdbcUtil.query("select count(*) counts from test.student ")
     val counts: Int = resultList.get(0).values().asScala.head.toString.toInt
     //val counts=1000
-    val ckInterval: Long = Duration.ofMinutes(10).toMillis
     val ckPath = "file://%s/cdctest".format(CommonUtils.getCurrentCKPath())
     val env: StreamExecutionEnvironment =
-      FlinkUtils.getSampleStreamTableEnvironment(ckPath, ckInterval)
+      FlinkUtils.getStreamEnvironment(ckPath, Duration.ofMinutes(10))
     val sourceDataStream: DataStream[Student901] = env
       .addSource(
         FlinkUtils.getCustomSource[Student901](() =>

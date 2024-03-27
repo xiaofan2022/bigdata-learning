@@ -36,7 +36,7 @@ object FlinkOracleCDC {
     val source: DebeziumSourceFunction[String] = OracleSource.builder[String]()
       .hostname("hdp05")
       .port(1521)
-      .url("jdbc:oracle:thin:@hdp05:1521/xe")
+      //.url("jdbc:oracle:thin:@hdp05:1521/xe")
       .schemaList("FLINKUSER")
       .database("xe") //这个应该是sid
       .username("flinkuser")
