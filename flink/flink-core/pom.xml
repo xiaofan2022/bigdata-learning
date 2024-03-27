@@ -52,6 +52,39 @@
             <artifactId>flink-runtime-web</artifactId>
             <version>${flink.version}</version>
         </dependency>
+
+        <!-- https://mvnrepository.com/artifact/org.apache.flink/flink-table-api-scala -->
+        <dependency>
+            <groupId>org.apache.flink</groupId>
+            <artifactId>flink-table-api-scala_2.12</artifactId>
+            <version>${flink.version}</version>
+        </dependency>
+        <!-- https://mvnrepository.com/artifact/org.apache.flink/flink-table-api-scala-bridge -->
+        <dependency>
+            <groupId>org.apache.flink</groupId>
+            <artifactId>flink-table-api-scala-bridge_2.12</artifactId>
+            <version>${flink.version}</version>
+            <!--            <scope>provided</scope>-->
+        </dependency>
+        <!-- https://mvnrepository.com/artifact/org.apache.flink/flink-table-planner -->
+        <dependency>
+            <groupId>org.apache.flink</groupId>
+            <artifactId>flink-table-planner_2.12</artifactId>
+            <version>${flink.version}</version>
+            <!--            <scope>test</scope>-->
+        </dependency>
+        <dependency>
+            <groupId>org.apache.flink</groupId>
+            <artifactId>flink-connector-base</artifactId>
+            <version>${flink.version}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>com.ververica</groupId>
+            <artifactId>flink-sql-connector-oracle-cdc</artifactId>
+            <version>2.4.2</version>
+        </dependency>
+
     </dependencies>
 
 </project>
