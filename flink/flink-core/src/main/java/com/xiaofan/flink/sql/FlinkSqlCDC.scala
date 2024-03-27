@@ -1,6 +1,7 @@
 package com.xiaofan.flink.sql
 
 
+import org.apache.flink.configuration.Configuration
 import org.apache.flink.streaming.api.scala.StreamExecutionEnvironment
 import org.apache.flink.table.api.Table
 import org.apache.flink.table.api.bridge.scala.StreamTableEnvironment
@@ -14,7 +15,10 @@ import org.apache.flink.table.api.bridge.scala.StreamTableEnvironment
 object FlinkSqlCDC {
 
   def main(args: Array[String]): Unit = {
-    val env = StreamExecutionEnvironment.getExecutionEnvironment
+    val configuration = new Configuration()
+    configuration.setInteger("rest.port", 8081)
+    val env = StreamExecutionEnvironment.createLocalEnvironmentWithWebUI(configuration)
+    env.disableOperatorChaining()
     val tableEnv = StreamTableEnvironment.create(env)
     tableEnv.executeSql(
       """
