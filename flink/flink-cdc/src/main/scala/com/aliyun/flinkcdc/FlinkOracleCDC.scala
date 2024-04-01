@@ -1,11 +1,10 @@
 package com.aliyun.flinkcdc
 
+import com.aliyun.utils.FlinkUtils
 import com.ververica.cdc.connectors.base.options.StartupOptions
 import com.ververica.cdc.connectors.oracle.OracleSource
 import com.ververica.cdc.debezium.{DebeziumSourceFunction, JsonDebeziumDeserializationSchema}
 import org.apache.flink.api.scala.createTypeInformation
-import org.apache.flink.configuration.Configuration
-import org.apache.flink.core.fs.Path
 import org.apache.flink.streaming.api.scala.StreamExecutionEnvironment
 
 import java.time.Duration
@@ -20,13 +19,8 @@ import java.util.Properties
 object FlinkOracleCDC {
 
   def main(args: Array[String]): Unit = {
-    val configuration = new Configuration()
-    configuration.setInteger("rest.port", 8081)
-    val env: StreamExecutionEnvironment = StreamExecutionEnvironment.createLocalEnvironmentWithWebUI(configuration)
+    val env: StreamExecutionEnvironment = FlinkUtils.getStreamEnvironment("oracle_cdc")
     env.enableCheckpointing(Duration.ofSeconds(30).toMillis)
-
-    env.getCheckpointConfig.setCheckpointStorage(
-      new Path("file:///{}/{}".format(this.getClass.getResource("").getPath, "oracle_cdc")))
     val properties = new Properties()
     //properties.put("oracle.cdc.auto-commit.enabled","false")
     properties.put("debezium.log.mining.strategy", "online_catalog")

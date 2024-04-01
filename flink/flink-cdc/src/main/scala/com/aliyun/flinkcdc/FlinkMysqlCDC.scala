@@ -1,5 +1,6 @@
 package com.aliyun.flinkcdc
 
+
 import com.ververica.cdc.connectors.mysql.source.MySqlSource
 import com.ververica.cdc.debezium.JsonDebeziumDeserializationSchema
 import org.apache.flink.api.common.eventtime.WatermarkStrategy
