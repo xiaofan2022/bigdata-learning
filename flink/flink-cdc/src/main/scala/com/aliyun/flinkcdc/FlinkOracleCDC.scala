@@ -26,21 +26,24 @@ object FlinkOracleCDC {
     properties.put("debezium.log.mining.strategy", "online_catalog")
     properties.put("debezium.log.mining.continuous.mine", "true")
     properties.put("database.history.store.only.captured.tables.ddl", String.valueOf(true))
+    properties.put("debezium.lob.enabled", "true")
+    properties.put("lob.enabled", "true")
+
     //properties.put("database.tablename.case.insensitive","false")
     val source: DebeziumSourceFunction[String] = OracleSource.builder[String]()
       .hostname("hdp05")
       .port(1521)
       //.url("jdbc:oracle:thin:@hdp05:1521/xe")
       .schemaList("FLINKUSER")
-      .database("xe") //这个应该是sid
+      .database("XE") //这个应该是sid
       .username("flinkuser")
       .password("flinkpw")
-      .tableList("CUSTOMERS")
+      .tableList("FLINKUSER.CUSTOMERS")
       .startupOptions(StartupOptions.initial())
       .deserializer(new JsonDebeziumDeserializationSchema())
       .debeziumProperties(properties)
       .build()
-    env.addSource(source).print()
+    env.addSource(source).print("result>>>>>>>>>>>>>>")
     env.execute(this.getClass.getSimpleName.dropRight(1))
   }
 

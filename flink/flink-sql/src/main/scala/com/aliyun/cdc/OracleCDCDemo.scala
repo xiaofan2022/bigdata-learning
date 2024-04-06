@@ -28,7 +28,8 @@ object OracleCDCDemo {
         |        CUSTOMER_NAME STRING,
         |        EMAIL STRING,
         |        PHONE STRING,
-        |        TEST_TIME TIMESTAMP
+        |        TEST_TIME TIMESTAMP,
+        |        VALUE1 STRING
         |        )
         |WITH (
         |        'connector' = 'oracle-cdc',
@@ -40,6 +41,7 @@ object OracleCDCDemo {
         |        'schema-name' = 'FLINKUSER',
         |        'table-name' = 'CUSTOMERS',
         |         'debezium.log.mining.strategy' = 'online_catalog',
+        |         'debezium.lob.enabled'='true',
         |        'debezium.log.mining.continuous.mine' = 'true'
         |)
         |""".stripMargin)

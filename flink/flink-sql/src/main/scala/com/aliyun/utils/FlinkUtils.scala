@@ -34,8 +34,15 @@ object FlinkUtils {
     //超时时间
     //checkpoint允许的最大连续失败次数
     env.getCheckpointConfig.setTolerableCheckpointFailureNumber(3)
-    env.getCheckpointConfig.setCheckpointStorage(
-      new Path("hdfs://hadoop101:9000/data/flink/checkpoint/" + pathSuffix))
+    if (System.getProperty("os.name").toLowerCase.contains("windows")) {
+      env.getCheckpointConfig.setCheckpointStorage(
+        new Path("file:///D://develop/check_point/" + pathSuffix))
+    } else {
+      env.getCheckpointConfig.setCheckpointStorage(
+        new Path("hdfs://hadoop101:9000/data/flink/checkpoint/" + pathSuffix))
+    }
+
+
     env
   }
 
