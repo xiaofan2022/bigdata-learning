@@ -13,6 +13,7 @@
     <packaging>pom</packaging>
     <modules>
         <module>spark-tuning</module>
+        <module>spark-common</module>
     </modules>
 
     <properties>
