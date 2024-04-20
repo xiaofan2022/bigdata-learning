@@ -1,0 +1,16 @@
+version: '3.8'
+
+services:
+  oracle:
+    image: sath89/oracle-ee-11g:latest
+    container_name: oracle11g
+    ports:
+      - "1521:1521"
+    environment:
+      - ORACLE_SID=ORCLCDB
+      - ORACLE_PDB=ORCLPDB1
+      - ORACLE_PWD=password
+      - ORACLE_CHARACTERSET=AL32UTF8
+      - ORACLE_MEM=1GB
+    volumes:
+      - ./oracle:/opt/oracle/oradata
