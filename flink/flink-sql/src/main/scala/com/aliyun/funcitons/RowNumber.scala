@@ -32,11 +32,14 @@ object RowNumber {
     })
     val inputTable = tableEnv.fromDataStream(eventDataStream).as("name", "dept", "type_name", "desc", "create_time")
     tableEnv.createTemporaryView("source_table", inputTable)
+    tableEnv.executeSql(
+      """
+        |create view temp_view as
+        |select *,row_number() over(partition by dept,type_name order by create_time desc) rn  from source_table
+        |""".stripMargin)
     val resultTable: Table = tableEnv.sqlQuery(
       """
-        |select * from (
-        |select *,row_number() over(partition by dept,type_name order by create_time desc) rn  from source_table)
-        | t where t.rn<=1
+        |select * from temp_view  where rn<=1
         |""".stripMargin)
     tableEnv.toChangelogStream(resultTable).print("result>>>>")
     env.execute(this.getClass.getSimpleName.dropRight(1))

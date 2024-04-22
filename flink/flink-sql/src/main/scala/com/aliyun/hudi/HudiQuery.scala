@@ -18,23 +18,24 @@ object HudiQuery {
     val tableEnv = StreamTableEnvironment.create(env)
     tableEnv.executeSql(
       """
-        |CREATE TABLE source_hudi (
-             customer_name STRING,
-        |    email string,
-        |    phone string,
-        |    test_time timestamp,
-        |        insert_date timestamp,
-        |
-        |   dt string
+        |CREATE TABLE hudi_constomer (
+        |customer_id INT,
+        |customer_name STRING,
+        |email string,
+        |phone string,
+        |test_time timestamp,
+        |insert_date timestamp
         |)
-        |PARTITIONED BY (dt)
         |WITH (
-        |'connector' = 'hudi',
-        |'read.utc-timezone'='false',
-        |'path' = 'hdfs://hadoop101:9000/warehouse/hudi/hudi_constomer'
-        |);
+        |  'connector' = 'hudi',
+        |  'path' = 'file:///D://data//warehouse/hudi/hudi_constomer_no_partition_flink_new',
+        |  'hoodie.datasource.write.keygenerator.class' = 'org.apache.hudi.keygen.ComplexAvroKeyGenerator',
+        |  'hoodie.datasource.write.recordkey.field' = 'customer_id',
+        |  'hoodie.datasource.write.hive_style_partitioning' = 'true'
+        |
+        |)
         |""".stripMargin)
-    val table: Table = tableEnv.sqlQuery("select * from source_hudi")
+    val table: Table = tableEnv.sqlQuery("select * from hudi_constomer")
     tableEnv.toChangelogStream(table).print()
     env.execute(this.getClass.getSimpleName.dropRight(1))
   }
