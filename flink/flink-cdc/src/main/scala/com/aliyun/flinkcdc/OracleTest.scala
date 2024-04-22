@@ -39,7 +39,7 @@ object OracleTest {
       .database("xe") //这个应该是sid
       .username("flinkuser")
       .password("flinkpw")
-      .tableList("CUSTOMERS")
+      //.tableList("*")如果没有写表明那么同步所有
       .startupOptions(StartupOptions.initial())
       .deserializer(new JsonDebeziumDeserializationSchema())
       .debeziumProperties(properties)
