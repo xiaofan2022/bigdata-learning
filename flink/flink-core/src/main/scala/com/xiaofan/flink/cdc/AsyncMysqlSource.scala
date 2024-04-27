@@ -20,6 +20,8 @@ import java.sql.{Connection, DriverManager, PreparedStatement, ResultSet}
 import java.time.Duration
 import java.util.concurrent.{ExecutorService, TimeUnit}
 import java.util.function.Predicate
+import java.util.{Collection => juCollection, List => juList, Map => juMap}
+import scala.collection.JavaConverters._
 
 /**
  * @author:
@@ -40,7 +42,7 @@ object AsyncMysqlSource {
   def main(args: Array[String]): Unit = {
 
     val jdbcUtil = new JdbcUtil("test")
-    val resultList: ju.List[ju.Map[String, AnyRef]] =
+    val resultList: juList[juMap[String, AnyRef]] =
       jdbcUtil.query("select count(*) counts from test.student ")
     val counts: Int = resultList.get(0).values().asScala.head.toString.toInt
     //val counts=1000
@@ -134,9 +136,9 @@ object AsyncMysqlSource {
 
       override def getRetryPredicate(): AsyncRetryPredicate[OUT] = {
         new AsyncRetryPredicate[OUT] {
-          override def resultPredicate: Option[Predicate[ju.Collection[OUT]]] = {
-            Option(new Predicate[ju.Collection[OUT]] {
-              override def test(t: ju.Collection[OUT]): Boolean = {
+          override def resultPredicate: Option[Predicate[juCollection[OUT]]] = {
+            Option(new Predicate[juCollection[OUT]] {
+              override def test(t: juCollection[OUT]): Boolean = {
                 //println("teteeeeeeeeee")
                 t.isEmpty
               }
