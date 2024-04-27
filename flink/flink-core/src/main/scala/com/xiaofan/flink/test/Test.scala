@@ -1,5 +1,7 @@
 package com.xiaofan.flink.test
 
+import org.slf4j.{Logger, LoggerFactory}
+
 
 /**
  * @author: twan
@@ -7,10 +9,10 @@ package com.xiaofan.flink.test
  * @description:
  */
 object Test {
+  private val logger: Logger = LoggerFactory.getLogger(Test.getClass)
 
   def main(args: Array[String]): Unit = {
-
-    println()
+    logger.info("testttt")
   }
 
 }

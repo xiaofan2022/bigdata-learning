@@ -13,9 +13,6 @@
     <packaging>pom</packaging>
     <modules>
         <module>flink-core</module>
-<!--
-        <module>flink-hudi</module>
--->
         <module>flink-other</module>
         <module>flink-cdc</module>
         <module>flink-sql</module>

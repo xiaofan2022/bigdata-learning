@@ -4,8 +4,8 @@ import com.xiaofan.flink.bean.Student901
 import org.apache.commons.lang3.SystemUtils
 import org.apache.flink.configuration.Configuration
 import org.apache.flink.core.fs.Path
+import org.apache.flink.streaming.api.environment.StreamExecutionEnvironment
 import org.apache.flink.streaming.api.functions.source.SourceFunction
-import org.apache.flink.streaming.api.scala.StreamExecutionEnvironment
 
 import java.time.Duration
 

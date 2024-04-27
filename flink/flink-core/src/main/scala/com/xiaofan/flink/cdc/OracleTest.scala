@@ -4,8 +4,7 @@ import com.ververica.cdc.connectors.base.options.StartupOptions
 import com.ververica.cdc.connectors.oracle.OracleSource
 import com.ververica.cdc.debezium.DebeziumSourceFunction
 import com.xiaofan.flink.utils.FlinkUtils
-import org.apache.flink.api.scala.createTypeInformation
-import org.apache.flink.streaming.api.scala.StreamExecutionEnvironment
+import org.apache.flink.streaming.api.environment.StreamExecutionEnvironment
 
 import java.time.Duration
 import java.util.Properties

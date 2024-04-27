@@ -48,8 +48,9 @@ object AsyncMysqlSource {
     val counts: Int = resultList.get(0).values().asScala.head.toString.toInt
     //val counts=1000
     val ckPath = "file://%s/cdctest".format(CommonUtils.getCurrentCKPath())
-    val env: StreamExecutionEnvironment =
-      FlinkUtils.getStreamEnvironment(ckPath, Duration.ofMinutes(10))
+    //    val env: StreamExecutionEnvironment =
+    //      FlinkUtils.getStreamEnvironment(ckPath, Duration.ofMinutes(10))
+    val env: StreamExecutionEnvironment = StreamExecutionEnvironment.getExecutionEnvironment
     val sourceDataStream: DataStream[Student901] = env
       .addSource(
         FlinkUtils.getCustomSource[Student901](() =>

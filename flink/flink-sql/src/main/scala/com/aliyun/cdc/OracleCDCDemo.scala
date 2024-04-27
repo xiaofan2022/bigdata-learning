@@ -42,12 +42,13 @@ object OracleCDCDemo {
         |        'table-name' = 'CUSTOMERS',
         |         'debezium.log.mining.strategy' = 'online_catalog',
         |         'debezium.lob.enabled'='true',
+        |         'debezium.decimal.handling.mode'='STRING',
         |        'debezium.log.mining.continuous.mine' = 'true'
         |)
         |""".stripMargin)
     val tableResult: Table = tableEnv.sqlQuery("select * from table_source_oracle")
     val resultStream = tableEnv.toChangelogStream(tableResult)
-    resultStream.print()
+    resultStream.print("result>>>>>")
     env.execute()
 
 

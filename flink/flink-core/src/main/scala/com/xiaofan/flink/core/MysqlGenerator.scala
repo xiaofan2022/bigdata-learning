@@ -4,8 +4,9 @@ import com.xiaofan.flink.bean.Student901
 import com.xiaofan.flink.utils.{CommonUtils, FlinkUtils, SinkUtils}
 import com.xiaofan.utils.RandomNameUtils
 import org.apache.flink.connector.jdbc.JdbcStatementBuilder
+import org.apache.flink.streaming.api.datastream.DataStream
+import org.apache.flink.streaming.api.environment.StreamExecutionEnvironment
 import org.apache.flink.streaming.api.functions.source.SourceFunction
-import org.apache.flink.streaming.api.scala.{DataStream, StreamExecutionEnvironment}
 
 import java.sql.PreparedStatement
 import java.time.Duration
