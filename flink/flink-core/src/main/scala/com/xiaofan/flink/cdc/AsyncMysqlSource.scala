@@ -5,6 +5,7 @@ import com.xiaofan.flink.utils.{CommonUtils, FlinkUtils}
 import com.xiaofan.utils.{DateUtils, JdbcUtil}
 import org.apache.flink.api.common.eventtime.{SerializableTimestampAssigner, WatermarkStrategy}
 import org.apache.flink.api.java.functions.KeySelector
+import org.apache.flink.api.scala.createTypeInformation
 import org.apache.flink.configuration.Configuration
 import org.apache.flink.streaming.api.scala.async.{AsyncRetryPredicate, AsyncRetryStrategy, ResultFuture, RichAsyncFunction}
 import org.apache.flink.streaming.api.scala.function.ProcessWindowFunction
