@@ -1,4 +1,4 @@
-package com.xiaofan.flink
+package com.xiaofan.flink.cdc
 
 import com.xiaofan.flink.bean.Student901
 import com.xiaofan.flink.utils.{CommonUtils, FlinkUtils}
@@ -8,7 +8,7 @@ import org.apache.flink.api.java.functions.KeySelector
 import org.apache.flink.configuration.Configuration
 import org.apache.flink.streaming.api.scala.async.{AsyncRetryPredicate, AsyncRetryStrategy, ResultFuture, RichAsyncFunction}
 import org.apache.flink.streaming.api.scala.function.ProcessWindowFunction
-import org.apache.flink.streaming.api.scala.{AsyncDataStream, DataStream, StreamExecutionEnvironment, createTypeInformation}
+import org.apache.flink.streaming.api.scala.{AsyncDataStream, DataStream, StreamExecutionEnvironment}
 import org.apache.flink.streaming.api.windowing.assigners.TumblingEventTimeWindows
 import org.apache.flink.streaming.api.windowing.time.Time
 import org.apache.flink.streaming.api.windowing.windows.TimeWindow
@@ -20,8 +20,6 @@ import java.sql.{Connection, DriverManager, PreparedStatement, ResultSet}
 import java.time.Duration
 import java.util.concurrent.{ExecutorService, TimeUnit}
 import java.util.function.Predicate
-import java.{util => ju}
-import scala.collection.JavaConverters._
 
 /**
  * @author:
@@ -91,10 +89,10 @@ object AsyncMysqlSource {
       .allowedLateness(Time.seconds(30)) //ÔÊÐí³Ùµ½30s
       .process(new ProcessWindowFunction[Student901, String, String, TimeWindow] {
         override def process(
-            key: String,
-            context: Context,
-            elements: Iterable[Student901],
-            out: Collector[String]): Unit = {
+                              key: String,
+                              context: Context,
+                              elements: Iterable[Student901],
+                              out: Collector[String]): Unit = {
           out.collect("count:%d,sum:%d".format(elements.size, elements.map(_.getAge.toLong).sum))
         }
       })
@@ -124,8 +122,8 @@ object AsyncMysqlSource {
    * @return
    */
   private def createFixedRetryStrategy[OUT](
-      maxAttempts: Int,
-      fixedDelayMs: Long): AsyncRetryStrategy[OUT] = {
+                                             maxAttempts: Int,
+                                             fixedDelayMs: Long): AsyncRetryStrategy[OUT] = {
     new AsyncRetryStrategy[OUT] {
 
       override def canRetry(currentAttempts: Int): Boolean = {
@@ -176,8 +174,8 @@ object AsyncMysqlSource {
     }
 
     override def asyncInvoke(
-        student: Student901,
-        resultFuture: ResultFuture[Student901]): Unit = {
+                              student: Student901,
+                              resultFuture: ResultFuture[Student901]): Unit = {
       ps.setInt(1, student.getId)
       val resultSet: ResultSet = ps.executeQuery()
       if (resultSet.next())

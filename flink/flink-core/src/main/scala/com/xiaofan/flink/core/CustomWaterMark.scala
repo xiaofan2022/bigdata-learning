@@ -1,4 +1,4 @@
-package com.xiaofan.flink
+package com.xiaofan.flink.core
 
 import com.xiaofan.utils.DateUtils
 import org.apache.flink.api.common.ExecutionConfig

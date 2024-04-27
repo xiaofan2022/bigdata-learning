@@ -17,6 +17,8 @@
         <flink.version>1.16.2</flink.version>
         <scala.version>2.12.17</scala.version>
         <scalastyle-maven-plugin.version>1.0.0</scalastyle-maven-plugin.version>
+        <flink.cdc.version>3.0.1</flink.cdc.version>
+
     </properties>
     <dependencies>
         <dependency>
@@ -85,7 +87,21 @@
             <artifactId>flink-json</artifactId>
             <version>${flink.version}</version>
         </dependency>
-
+        <dependency>
+            <groupId>com.ververica</groupId>
+            <artifactId>flink-connector-oracle-cdc</artifactId>
+            <version>${flink.cdc.version}</version>
+        </dependency>
+        <!--        <dependency>
+                    <groupId>com.ververica</groupId>
+                    <artifactId>flink-sql-connector-oracle-cdc</artifactId>
+                    <version>${flink.cdc.version}</version>
+                </dependency>-->
+        <dependency>
+            <groupId>com.ververica</groupId>
+            <artifactId>flink-connector-mysql-cdc</artifactId>
+            <version>${flink.cdc.version}</version>
+        </dependency>
 
     </dependencies>
 

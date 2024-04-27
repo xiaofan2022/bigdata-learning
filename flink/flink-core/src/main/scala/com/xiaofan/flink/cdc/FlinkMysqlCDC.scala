@@ -1,5 +1,4 @@
-package com.aliyun.flinkcdc
-
+package com.xiaofan.flink.cdc
 
 import com.ververica.cdc.connectors.mysql.source.MySqlSource
 import com.ververica.cdc.debezium.JsonDebeziumDeserializationSchema

@@ -1,5 +1,11 @@
-package com.xiaofan.flink
+package com.xiaofan.flink.core
 
+/**
+ * @description
+ * @author twan
+ * @date 2024-04-27 15:55:56
+ * @version 1.0
+ */
 object ScalaStyleTest {
 
   def main(args: Array[String]): Unit = {}
@@ -7,7 +13,7 @@ object ScalaStyleTest {
   def getMessage(message: String): Unit = {
     val sql =
       """
-        |select * from 
+        |select * from
         |student
         |""".stripMargin
     this.getClass.getClassLoader.getParent.getParent.getParent.getParent.getParent.getParent.getParent.getParent.getParent.getParent.getParent.getParent.getParent.getParent

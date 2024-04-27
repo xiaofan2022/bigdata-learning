@@ -1,34 +1,35 @@
-package com.aliyun.flinkcdc
+package com.xiaofan.flink.cdc
 
-import com.aliyun.utils.FlinkUtils
 import com.ververica.cdc.connectors.base.options.StartupOptions
 import com.ververica.cdc.connectors.oracle.OracleSource
-import com.ververica.cdc.debezium.{DebeziumSourceFunction, JsonDebeziumDeserializationSchema}
+import com.ververica.cdc.debezium.DebeziumSourceFunction
+import com.xiaofan.flink.utils.FlinkUtils
 import org.apache.flink.api.scala.createTypeInformation
 import org.apache.flink.streaming.api.scala.StreamExecutionEnvironment
 
 import java.time.Duration
 import java.util.Properties
 
+
 /**
  * @description ${description}
  * @author twan
- * @date 2024-03-22 21:45:43
+ * @date 2024-03-28 13:03:16
  * @version 1.0
  */
-object FlinkOracleCDC {
+object OracleTest {
 
   def main(args: Array[String]): Unit = {
     val env: StreamExecutionEnvironment = FlinkUtils.getStreamEnvironment("oracle_cdc")
     env.enableCheckpointing(Duration.ofSeconds(30).toMillis)
     val properties = new Properties()
     //properties.put("oracle.cdc.auto-commit.enabled","false")
-    properties.put("debezium.log.mining.strategy", "online_catalog")
-    properties.put("debezium.log.mining.continuous.mine", "true")
+    properties.setProperty("debezium.database.tablename.case.insensitive", "false")
+    properties.setProperty("debezium.log.mining.strategy", "online_catalog")
+    properties.setProperty("debezium.log.mining.continuous.mine", "true")
     properties.put("database.history.store.only.captured.tables.ddl", String.valueOf(true))
-    properties.put("debezium.lob.enabled", "true")
-    properties.put("lob.enabled", "true")
 
+    properties.setProperty("scan.startup.mode", "latest-offset")
     //properties.put("database.tablename.case.insensitive","false")
     val source: DebeziumSourceFunction[String] = OracleSource.builder[String]()
       .hostname("hdp05")
@@ -38,12 +39,13 @@ object FlinkOracleCDC {
       .database("XE") //这个应该是sid
       .username("flinkuser")
       .password("flinkpw")
-      .tableList("FLINKUSER.CUSTOMERS")
+      //.tableList("*")如果没有写表明那么同步所有
       .startupOptions(StartupOptions.initial())
-      .deserializer(new JsonDebeziumDeserializationSchema())
+      // .deserializer(new JsonDebeziumDeserializationSchema())
+      .deserializer(new MyJsonDebeziumDeserializationSchema())
       .debeziumProperties(properties)
       .build()
-    env.addSource(source).print("result>>>>>>>>>>>>>>")
+    env.addSource(source).print("result>>>>")
     env.execute(this.getClass.getSimpleName.dropRight(1))
   }
 
