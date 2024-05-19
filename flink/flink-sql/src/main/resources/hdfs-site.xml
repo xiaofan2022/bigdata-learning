@@ -17,29 +17,13 @@
 <!-- Put site-specific property overrides in this file. -->
 
 <configuration>
+    <!-- 指定HDFS副本的数量 -->
+    <property>
+        <name>dfs.replication</name>
+        <value>1</value>
+    </property>
     <property>
         <name>dfs.permissions.enabled</name>
         <value>false</value>
     </property>
-    <property>
-        <name>fs.defaultFS</name>
-        <value>hdfs://hadoop101:9000</value>
-    </property>
-    <property>
-        <name>dfs.namenode.secondary.http-address</name>
-        <value>hadoop102:50090</value>
-    </property>
-    <property>
-        <name>dfs.namenode.secondary.https-address</name>
-        <value>hadoop102:50091</value>
-    </property>
-    <property>
-        <name>dfs.replication</name>
-        <value>3</value>
-    </property>
-    <property>
-        <name>dfs.webhdfs.enabled</name>
-        <value>true</value>
-    </property>
-
 </configuration>

@@ -32,7 +32,6 @@ object HudiQuery {
         |  'hoodie.datasource.write.keygenerator.class' = 'org.apache.hudi.keygen.ComplexAvroKeyGenerator',
         |  'hoodie.datasource.write.recordkey.field' = 'customer_id',
         |  'hoodie.datasource.write.hive_style_partitioning' = 'true'
-        |
         |)
         |""".stripMargin)
     val table: Table = tableEnv.sqlQuery("select * from hudi_constomer")

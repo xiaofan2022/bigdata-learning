@@ -19,6 +19,7 @@
         <java.version>1.8</java.version>
         <scala.binary.version>2.12</scala.binary.version>
         <flink.cdc.version>3.0.1</flink.cdc.version>
+        <hive.version>2.3.9</hive.version>
     </properties>
 
     <dependencies>
@@ -84,12 +85,17 @@
             <artifactId>flink-table-planner_2.12</artifactId>
             <version>${flink.version}</version>
         </dependency>
+        <!--        <dependency>-->
+        <!--            <groupId>org.apache.hudi</groupId>-->
+        <!--            <artifactId>hudi-flink1.17-bundle</artifactId>-->
+        <!--            <version>0.14.1</version>-->
+        <!--            <systemPath>${project.basedir}/lib/hudi-flink1.17-bundle-0.14.1-new.jar</systemPath>-->
+        <!--            <scope>system</scope>-->
+        <!--        </dependency>-->
         <dependency>
             <groupId>org.apache.hudi</groupId>
             <artifactId>hudi-flink1.17-bundle</artifactId>
-            <version>0.14.1</version>
-            <systemPath>${project.basedir}/lib/hudi-flink1.17-bundle-0.14.1-new.jar</systemPath>
-            <scope>system</scope>
+            <version>${hudi.version}</version>
         </dependency>
         <!-- https://mvnrepository.com/artifact/org.apache.hudi/hudi-flink-client -->
         <dependency>
@@ -104,6 +110,14 @@
                 <exclusion>
                     <groupId>org.apache.hadoop</groupId>
                     <artifactId>hadoop-common</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>org.slf4j</groupId>
+                    <artifactId>slf4j-log4j12</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>org.slf4j</groupId>
+                    <artifactId>slf4j-api</artifactId>
                 </exclusion>
             </exclusions>
         </dependency>
@@ -128,6 +142,7 @@
             <artifactId>mysql-connector-java</artifactId>
             <version>8.0.27</version>
         </dependency>
+
         <dependency>
             <groupId>com.ververica</groupId>
             <artifactId>flink-sql-connector-oracle-cdc</artifactId>
@@ -143,17 +158,40 @@
             <artifactId>flink-connector-files</artifactId>
             <version>${flink.version}</version>
         </dependency>
-        <!--<dependency>
+        <dependency>
+            <groupId>org.apache.flink</groupId>
+            <artifactId>flink-sql-connector-hive-${hive.version}_${scala.binary.version}</artifactId>
+            <version>${flink.version}</version>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
             <groupId>org.apache.hive</groupId>
             <artifactId>hive-exec</artifactId>
             <version>2.3.9</version>
             <exclusions>
                 <exclusion>
-                    <artifactId>dropwizard-metrics-hadoop-metrics2-reporter</artifactId>
-                    <groupId>com.github.joshelser</groupId>
+                    <groupId>org.slf4j</groupId>
+                    <artifactId>slf4j-log4j12</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>org.slf4j</groupId>
+                    <artifactId>slf4j-api</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>log4j</groupId>
+                    <artifactId>log4j</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>org.apache.logging.log4j</groupId>
+                    <artifactId>log4j-core</artifactId>
+                </exclusion>
+                <!--                如果使用logback不能有此依赖-->
+                <exclusion>
+                    <groupId>org.apache.logging.log4j</groupId>
+                    <artifactId>log4j-slf4j-impl</artifactId>
                 </exclusion>
             </exclusions>
-        </dependency>-->
+        </dependency>
     </dependencies>
 
 </project>
