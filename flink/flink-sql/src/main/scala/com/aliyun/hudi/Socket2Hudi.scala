@@ -5,7 +5,7 @@ import org.apache.flink.api.scala.createTypeInformation
 import org.apache.flink.streaming.api.scala.{DataStream, StreamExecutionEnvironment}
 import org.apache.flink.table.api.bridge.scala.StreamTableEnvironment
 import org.apache.flink.table.api.{DataTypes, Schema, Table}
-
+//TODO 测试 压缩改为离线测试查询数据写入情况
 /**
  * @description ${description}
  * @author twan
