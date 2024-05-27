@@ -50,6 +50,11 @@
             <version>2.14.6</version>
             <scope>compile</scope>
         </dependency>
+        <dependency>
+            <groupId>org.apache.kyuubi</groupId>
+            <artifactId>kyuubi-hive-jdbc-shaded</artifactId>
+            <version>1.7.0</version>
+        </dependency>
     </dependencies>
     <build>
         <plugins>
