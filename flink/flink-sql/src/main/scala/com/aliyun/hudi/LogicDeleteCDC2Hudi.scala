@@ -1,10 +1,8 @@
 package com.aliyun.hudi
 
 import com.aliyun.utils.FlinkUtils
-import org.apache.flink.configuration.Configuration
 import org.apache.flink.streaming.api.scala.StreamExecutionEnvironment
 import org.apache.flink.table.api.bridge.scala.StreamTableEnvironment
-import org.apache.hudi.table.catalog.HoodieCatalog
 
 /**
  * @description ${description}
@@ -14,8 +12,11 @@ import org.apache.hudi.table.catalog.HoodieCatalog
  */
 object LogicDeleteCDC2Hudi {
 
+  /**
+   * TODO 初始化环境必须放core-site等配置文件到/src/resource下否则hudi和flink找不到相关配置
+   */
   def main(args: Array[String]): Unit = {
-    val env: StreamExecutionEnvironment = FlinkUtils.getStreamEnvironment("oracle_jdbc2_hudi")
+    val env: StreamExecutionEnvironment = FlinkUtils.getStreamEnvironment("oracle_jdbc2_hudi", clusterName = "qidian")
     val tableEnv = StreamTableEnvironment.create(env)
     tableEnv.executeSql(
       """
@@ -40,27 +41,12 @@ object LogicDeleteCDC2Hudi {
         |        'debezium.log.mining.continuous.mine' = 'true'
         |)
         |""".stripMargin)
-    val configuration = new Configuration()
-    configuration.setString("type", "hudi")
-    configuration.setString("mode", "hms")
-    configuration.setString("default-database", "default")
-    configuration.setString("hive.conf.dir", "D://develop//data//hive_conf")
-    configuration.setString("catalog.path", "/hudi_catalog")
-
-    /**
-     * CREATE CATALOG hudi_catalog WITH (
-     * 'type' = 'hudi',
-     * 'mode' = 'hms',
-     * 'default-database' = 'default',
-     * 'hive.conf.dir' = 'D://develop//data//hive_conf'
-     * );
-     */
     val hudiCataLogName = "hudi_catalog"
-    val hudiCatalog = new HoodieCatalog(hudiCataLogName, configuration)
-    tableEnv.registerCatalog(hudiCataLogName, hudiCatalog)
+    tableEnv.registerCatalog(hudiCataLogName, FlinkUtils.getHudiCatalog())
     tableEnv.useCatalog(hudiCataLogName)
     tableEnv.executeSql("create database  if not exists  test")
     tableEnv.executeSql("use test")
+    tableEnv.executeSql("drop table  if exists sink_hudi")
     tableEnv.executeSql(
       """
         |CREATE TABLE if not exists  sink_hudi(
@@ -72,7 +58,7 @@ object LogicDeleteCDC2Hudi {
         |)
         |with(
         |'connector'='hudi',
-        |'path'= 'hdfs:///user/hive/warehouse/test/hudi_logic',
+        |'path'= 'hdfs:///user/hive/warehouse/test/sink_hudi',
         |'hoodie.datasource.write.recordkey.field'= 'CUSTOMER_ID',-- 主键
         |'hoodie.allow.operation.metadata.field'='true',
         |'changelog.enabled'='true',
@@ -87,15 +73,16 @@ object LogicDeleteCDC2Hudi {
         |'read.streaming.check-interval' = '4', -- 指定检查新的commit的周期，默认是60秒
         |'read.streaming.enabled'='true',--开启流读模式
         |'read.streaming.skip_compaction' = 'true',-- 避免重复消费问题
-        |'read.tasks'='1',--读取任务的数量默认是4.
-        |'hive_sync.enable'='true',
-        |'hive_sync.table'='sink_hudi',
-        |'hive_sync.db'='test',
-        |'hive_sync.mode' = 'hms',
-        |'hive_sync.metastore.uris' = 'thrift://hadoop2:9083',
-        |'changelog.enabled'='true',
-        |'hive_sync.support_timestamp'='true'
+        |'read.tasks'='1'--读取任务的数量默认是4.
         |)""".stripMargin)
+    //TODO 使用catalog方式创建此处可以不用写
+    //'hive_sync.enable'='true',HU
+    //'hive_sync.table'='sink_hudi',
+    //'hive_sync.db'='test',
+    //'hive_sync.mode' = 'hms',
+    //'hive_sync.metastore.uris' = 'thrift://hadoop2:9083',
+    //'changelog.enabled'='true',
+    //'hive_sync.support_timestamp'='true'
     tableEnv.executeSql("insert into hudi_catalog.test.sink_hudi select * from default_catalog.default_database.table_customers")
 
   }

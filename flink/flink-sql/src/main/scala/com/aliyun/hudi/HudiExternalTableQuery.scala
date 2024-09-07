@@ -17,9 +17,9 @@ object HudiExternalTableQuery {
   def main(args: Array[String]): Unit = {
     val env: StreamExecutionEnvironment = FlinkUtils.getStreamEnvironment("query_hudi_external")
     val tableEnv = StreamTableEnvironment.create(env)
-    val hoodieCatalog: HoodieCatalog = FlinkUtils.getHudiCatalog()
-    tableEnv.registerCatalog(hoodieCatalog.getName, hoodieCatalog)
-    tableEnv.useCatalog(hoodieCatalog.getName)
+    val hoodieHiveCatalog: HoodieCatalog = FlinkUtils.getHudiCatalog()
+    tableEnv.registerCatalog(hoodieHiveCatalog.getName, hoodieHiveCatalog)
+    tableEnv.useCatalog(hoodieHiveCatalog.getName)
     tableEnv.executeSql("create database  if not exists  test")
     tableEnv.executeSql("use test")
     val table: Table = tableEnv.sqlQuery(

@@ -4,6 +4,7 @@ import org.apache.flink.configuration.Configuration
 import org.apache.flink.core.fs.Path
 import org.apache.flink.streaming.api.functions.source.SourceFunction
 import org.apache.flink.streaming.api.scala.StreamExecutionEnvironment
+import org.apache.flink.table.catalog.hive.HiveCatalog
 import org.apache.hudi.table.catalog.HoodieCatalog
 import org.slf4j.{Logger, LoggerFactory}
 
@@ -23,9 +24,11 @@ object FlinkUtils {
 
   def getStreamEnvironment(
                             pathSuffix: String = "",
-                            checkPointDuration: Duration = Duration.ofMinutes(1),
-                            isLocalEnv: Boolean = true): StreamExecutionEnvironment = {
+                            checkPointDuration: Duration = Duration.ofSeconds(10),
+                            isLocalEnv: Boolean = true,
+                            clusterName: String = "my_test"): StreamExecutionEnvironment = {
     var env: StreamExecutionEnvironment = null
+    if (clusterName == "qidian") System.setProperty("HADOOP_USER_NAME", "hdfs")
     if (isLocalEnv) {
       val configuration = new Configuration()
       val port: Int = findAvailablePort(8080, 9000)
@@ -93,14 +96,23 @@ object FlinkUtils {
     -1
   }
 
-  def getHudiCatalog(hudiCataLogName: String = "hudi_catalog"): HoodieCatalog = {
+  def getHudiCatalog(hudiCatalogName: String = "hudi_catalog"): HoodieCatalog = {
     val configuration = new Configuration()
     configuration.setString("type", "hudi")
     configuration.setString("mode", "hms")
     configuration.setString("default-database", "default")
-    configuration.setString("hive.conf.dir", "D://develop//data//hive_conf")
-    configuration.setString("catalog.path", "/hudi_catalog")
-    new HoodieCatalog(hudiCataLogName, configuration)
+    configuration.setString("hive.conf.dir", this.getClass.getResource("/").getPath().substring(1) + "/hive")
+    configuration.setString("catalog.path", "/test/catalog")
+    new HoodieCatalog(hudiCatalogName, configuration)
   }
 
+
+  def getHiveCatalog(hiveCatalog: String = "hive_catalog", defaultDatabase: String = "default", version: String = "2.1.1"): HiveCatalog = {
+    new HiveCatalog(
+      "myHive", // catalog name
+      defaultDatabase,
+      this.getClass.getResource("/").getPath().substring(1) + "/hive",
+      version // Hive version
+    )
+  }
 }
